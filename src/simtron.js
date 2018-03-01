@@ -8,7 +8,7 @@ import {
   messageContainsAllTexts,
   getValueFromMessage
 } from "./utils";
-import parse, { parseMessage } from "./data-parser";
+import parse, { parseMessage, readLine } from "./data-parser";
 import dictionary from "./dictionary";
 import { enableSim, statusSim } from "./actions";
 
@@ -58,14 +58,21 @@ const simtron = (botToken, options = {}, port) => {
       .then(res => res.channels.filter(channel => channel.is_member));
 
   port.on("data", payload => {
-    const text = parseMessage(payload);
+    opt.logger.info(payload);
+    const decodedInput = payload.toString("utf8");
+    const line = readLine(decodedInput, writeMessage);
+  });
+
+  const writeMessage = line => {
+    opt.logger.info(line);
+    const text = parseMessage(line);
     if (text) {
       const msgOptions = { as_user: true };
       const message = { ...msgOptions, attachments: [{ title: text }] };
       getGroups().then(postMessageToChannels(message));
       getChannels().then(postMessageToChannels(message));
     }
-  });
+  };
 
   rtm.on(RTM_EVENTS.MESSAGE, event => {
     if (

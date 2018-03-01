@@ -2,7 +2,10 @@
   "name": "simtronbot",
   "version": "0.0.1",
   "description": "A Slack bot for simtron",
-  "keywords": ["Slack", "bot"],
+  "keywords": [
+    "Slack",
+    "bot"
+  ],
   "repository": {
     "type": "git",
     "url": ""

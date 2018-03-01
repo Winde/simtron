@@ -10,6 +10,24 @@ const parse = (payload, bydefault = {}) => {
   return result;
 };
 
+let serialLineBuffer = "";
+export const readLine = (dataChunk, onLineReceived) => {
+  const dataChunkLength = dataChunk.length;
+
+  for (let i = 0; i < dataChunkLength; i++) {
+    const charCode = dataChunk.charCodeAt(i);
+    if (charCode != 10 && charCode != 13) {
+      serialLineBuffer += dataChunk.charAt(i);
+    } else {
+      if (serialLineBuffer !== "") {
+        onLineReceived(serialLineBuffer);
+      }
+      serialLineBuffer = "";
+    }
+  }
+  return serialLineBuffer;
+};
+
 const getStatusMessage = message =>
   `Channel ${message.channel} is ${message.status}`;
 const getBodyMessage = message => message.body;
