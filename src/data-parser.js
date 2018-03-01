@@ -12,15 +12,15 @@ const parse = (payload, bydefault = {}) => {
 
 const getStatusMessage = message =>
   `Channel ${message.channel} is ${message.status}`;
-const getSmsMessage = message => message.body;
+const getBodyMessage = message => message.body;
 
 export const parseMessage = payload => {
   const data = parse(payload);
   let message = "";
   if (data.type === "status") {
     message = getStatusMessage(data);
-  } else if (data.type === "sms") {
-    message = getSmsMessage(data);
+  } else if (data.type === "sms" || data.type === "booting") {
+    message = getBodyMessage(data);
   }
   return message;
 };

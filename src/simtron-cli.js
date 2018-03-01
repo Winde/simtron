@@ -5,7 +5,7 @@
 import chalk from "chalk";
 import simtron from "./simtron";
 import pkg from "../package.json";
-import portFactory from "./port-mock";
+import portFactory from "./port-factory";
 import logger from "./logger";
 
 if (
