@@ -8,7 +8,6 @@ import {
   messageContainsAllTexts,
   getValueFromMessage
 } from "./utils";
-//import port from "./port-mock";
 import parse, { parseMessage } from "./data-parser";
 import dictionary from "./dictionary";
 import { enableSim, statusSim } from "./actions";
@@ -46,19 +45,25 @@ const simtron = (botToken, options = {}, port) => {
     return "";
   };
 
+  const postMessageToChannels = message => channels =>
+    channels.map(channel => {
+      opt.logger.info(`Posting message to ${channel.name}`, message);
+      web.chat.postMessage(channel.id, "", message);
+    });
+
   const getGroups = () => web.groups.list().then(res => res.groups);
+  const getChannels = () =>
+    web.channels
+      .list()
+      .then(res => res.channels.filter(channel => channel.is_member));
 
   port.on("data", payload => {
     const text = parseMessage(payload);
     if (text) {
       const msgOptions = { as_user: true };
       const message = { ...msgOptions, attachments: [{ title: text }] };
-      getGroups().then(groups =>
-        groups.map(group => {
-          opt.logger.info(`Posting message to ${group.name}`, message);
-          web.chat.postMessage(group.id, "", message);
-        })
-      );
+      getGroups().then(postMessageToChannels(message));
+      getChannels().then(postMessageToChannels(message));
     }
   });
 

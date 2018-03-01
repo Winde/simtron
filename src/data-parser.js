@@ -1,9 +1,11 @@
+import logger from "./logger";
+
 const parse = (payload, bydefault = {}) => {
   let result = bydefault;
   try {
     result = JSON.parse(payload);
   } catch (e) {
-    console.log(e);
+    logger.error(e);
   }
   return result;
 };

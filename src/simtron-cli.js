@@ -2,18 +2,18 @@
 
 /* eslint no-console: off */
 
-import winston from "winston";
 import chalk from "chalk";
 import simtron from "./simtron";
 import pkg from "../package.json";
-import portPromise from "./port-mock";
+import portFactory from "./port-mock";
+import logger from "./logger";
 
 if (
   ["help", "--help", "-h", "version", "--version", "-v"].includes(
     process.argv[2]
   )
 ) {
-  console.log(`
+  logger.info(`
     ${chalk.bgMagenta(`simtron v${pkg.version}`)}
 
     Usage:
@@ -29,28 +29,20 @@ if (
   process.exit(0);
 }
 
-const logger = new winston.Logger({
-  transports: [
-    new winston.transports.Console({
-      timestamp() {
-        return new Date().toISOString();
-      }
-    })
-  ]
-});
-
-logger.cli();
-
-process.env.BOT_TOKEN = "xoxb-320491931666-okTGBQpklDoBLiTrskV0GFm5";
-
 const options = { logger };
 if (!process.env.BOT_TOKEN) {
   logger.error(
     "You must setup the BOT_TOKEN environment variable before running the bot"
   );
-  //  process.exit(1);
+  process.exit(1);
 }
-portPromise.then(port => {
-  const bot = simtron(process.env.BOT_TOKEN, options, port);
-  bot.start();
-});
+portFactory.then(
+  port => {
+    const bot = simtron(process.env.BOT_TOKEN, options, port);
+    bot.start();
+  },
+  () => {
+    logger.error("Exiting simtron");
+    process.exit(0);
+  }
+);

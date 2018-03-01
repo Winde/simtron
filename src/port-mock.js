@@ -1,6 +1,4 @@
-import SerialPort from "serialport";
-import childProcess from "child_process";
-import parser from "./data-parser";
+import logger from "./logger";
 
 const getPort = () => {
   const eventMap = {};
@@ -13,7 +11,7 @@ const getPort = () => {
       callback(payload);
     },
     write: (payload, callbackErr) => {
-      console.log(payload);
+      logger.info(payload);
     }
   };
 };
@@ -37,33 +35,8 @@ setInterval(() => {
   mockedPort.trigger("data", getRandomMessage());
 }, 5000);
 
-let resolvePort;
-let rejectPort;
 const portPromise = new Promise((resolve, reject) => {
-  resolvePort = resolve;
-  rejectPort = reject;
+  resolve(mockedPort);
 });
-
-childProcess.exec(
-  "./node_modules/serialport/bin/list.js -f json",
-  (error, stdout) => {
-    console.log(stdout);
-    const selectedPort = parser(stdout, [])
-      .filter(
-        portData =>
-          portData &&
-          portData.vendorId &&
-          portData.vendorId.indexOf("8086") > -1
-      )
-      .find(() => true);
-
-    if (selectedPort && selectedPort.comName) {
-      //const port = new SerialPort(selectedPort.comName);
-      resolvePort(mockedPort);
-    } else {
-      rejectPort();
-    }
-  }
-);
 
 export default portPromise;
