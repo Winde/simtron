@@ -84,7 +84,7 @@ const simtron = (botToken, options = {}, port) => {
   };
 
   const getDictionaryMessage = ({ dictionary }) =>
-    `We have the following numbers: ${Object.keys(dictionary)
+    `We have the following numbers: \r\n${Object.keys(dictionary)
       .map(
         key =>
           key +

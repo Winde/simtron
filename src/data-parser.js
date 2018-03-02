@@ -1,4 +1,5 @@
 import logger from "./logger";
+import dictionary from "./dictionary";
 
 const parse = (payload, bydefault = {}) => {
   let result = bydefault;
@@ -30,7 +31,19 @@ export const readLine = (dataChunk, onLineReceived) => {
 
 const getStatusMessage = message =>
   `Channel ${message.channel} is ${message.status}`;
-const getBodyMessage = message => message.body;
+
+const getBodyMessage = message => {
+  let text = "";
+  if (message.channel) {
+    const msisdn = Object.keys(dictionary).find(
+      key => dictionary[key].channel == message.channel
+    );
+    if (msisdn) {
+      text = msisdn + ": ";
+    }
+  }
+  text = text + " " + message.body;
+};
 
 export const parseMessage = payload => {
   const data = parse(payload);
