@@ -10,7 +10,7 @@ import {
 } from "./utils";
 import parse, { parseMessage, readLine } from "./data-parser";
 import dictionary from "./dictionary";
-import { enableSim, statusSim } from "./actions";
+import { enableSim, disableSim, statusSim } from "./actions";
 
 const defaultOptions = {
   messageColor: "#590088",
@@ -38,10 +38,19 @@ const simtron = (botToken, options = {}, port) => {
 
   const sendEnableSim = ({ event }) => {
     const msisdn = getValueFromMessage(event, Object.keys(dictionary));
-    const channel = dictionary[msisdn];
+    const channel = dictionary[msisdn].channel;
 
     opt.logger.info(`Enabling sim channel: ${channel} for number: ${msisdn}`);
     enableSim({ port, channel });
+    return "";
+  };
+
+  const sendDisableSim = ({ event }) => {
+    const msisdn = getValueFromMessage(event, Object.keys(dictionary));
+    const channel = dictionary[msisdn].channel;
+
+    opt.logger.info(`Disabling sim channel: ${channel} for number: ${msisdn}`);
+    disableSim({ port, channel });
     return "";
   };
 
@@ -74,24 +83,45 @@ const simtron = (botToken, options = {}, port) => {
     }
   };
 
+  const getDictionaryMessage = ({ dictionary }) =>
+    `We have the following numbers: ${Object.keys(dictionary)
+      .map(
+        key =>
+          key +
+          " " +
+          dictionary[key].provider +
+          " " +
+          dictionary[key].paymentModel
+      )
+      .join(
+        "\r\n"
+      )} \r\n If you ask me for a specific phone number you can do:\r\n enable <PHONENUMBER> to start receiving SMS \r\n disable <PHONENUMBER> to stop receiving SMS`;
+
+  const getWhatCanIdoMessage = () =>
+    `Ask me for the phone numbers I handle to get a list of the sims I manage`;
+
   rtm.on(RTM_EVENTS.MESSAGE, event => {
     if (
       isMessage(event) &&
       isMessageToChannel(event) &&
       !isFromUser(event, botId) &&
-      messageContainsAllTexts(event, ["simtron"])
+      messageContainsAnyText(event, opt.botIds)
     ) {
       web.users.info(event.user).then(response => {
         const username = response && response.user && response.user.name;
-        let ack = username ? `@${username}: Acknowledged!` : "Acknowledged!";
+        let ack = username ? `@${username} ` : ` `;
         if (messageContainsAnyText(event, Object.keys(dictionary))) {
-          sendEnableSim({ event });
-        } else if (messageContainsAnyText(event, askForSims)) {
-          ack = `${ack} We have the following numbers: ${Object.keys(
-            dictionary
-          ).join("\r\n")}`;
+          if (messageContainsAnyText(event, "enable")) {
+            sendEnableSim({ event });
+            ack = ack + "Enable sim acknowledged!";
+          } else if (messageContainsAnyText(event, "disable")) {
+            sendDisableSim({ event });
+            ack = ack + "Disable sim acknowledged!";
+          } else {
+            ack = ack + "You can ask either to enable PHONE or disable PHONE";
+          }
         } else {
-          ack = username ? `@${username}: Whaaaaaa?` : "Whaaaaaa?";
+          ack = getDictionaryMessage({ dictionary });
         }
 
         const msgOptions = {

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-./node_modules/.bin/rimraf lib;
+rm -rf lib
 ./node_modules/.bin/babel src --out-dir lib;
 chmod +x lib/simtron-cli.js;

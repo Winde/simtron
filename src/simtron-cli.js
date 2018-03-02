@@ -29,7 +29,10 @@ if (
   process.exit(0);
 }
 
-const options = { logger };
+const options = {
+  logger,
+  botIds: ["simtron", "@simtron", "<@U9EEFTDKL>"]
+};
 if (!process.env.BOT_TOKEN) {
   logger.error(
     "You must setup the BOT_TOKEN environment variable before running the bot"
