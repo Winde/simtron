@@ -36,13 +36,13 @@ const getBodyMessage = message => {
   let text = "";
   if (message.channel) {
     const msisdn = Object.keys(dictionary).find(
-      key => dictionary[key].channel == message.channel
+      key => dictionary[key].channel === message.channel
     );
     if (msisdn) {
       text = msisdn + ": ";
     }
   }
-  text = text + " " + message.body;
+  return text + " " + message.body;
 };
 
 export const parseMessage = payload => {
