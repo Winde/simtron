@@ -39,6 +39,7 @@
     "eslint-plugin-prettier": "^2.6.0",
     "prettier": "^1.10.2",
     "winston": "^2.3.1",
+    "node-persist": "^2.1.0",
     "serialport": "^6.1.1"
   },
   "devDependencies": {

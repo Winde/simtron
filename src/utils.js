@@ -8,6 +8,8 @@ export const isMessageToChannel = message =>
 
 export const isFromUser = (event, userId) => event.user === userId;
 
+export const isFromAnyUser = (event, userIds) => userIds.includes(event.user);
+
 export const sanitize = text =>
   text
     .toLowerCase()

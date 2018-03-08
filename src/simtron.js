@@ -3,13 +3,14 @@ import {
   isMessage,
   isMessageToChannel,
   isFromUser,
+  isFromAnyUser,
   messageContainsText,
   messageContainsAnyText,
   messageContainsAllTexts,
   getValueFromMessage
 } from "./utils";
 import parse, { parseMessage, readLine } from "./data-parser";
-import dictionary from "./dictionary";
+import getDictionary from "./dictionary";
 import { enableSim, disableSim, statusSim } from "./actions";
 
 const defaultOptions = {
@@ -37,6 +38,7 @@ const simtron = (botToken, options = {}, port) => {
   const web = new WebClient(botToken);
 
   const sendEnableSim = ({ event }) => {
+    const dictionary = getDictionary();
     const msisdn = getValueFromMessage(event, Object.keys(dictionary));
     const channel = dictionary[msisdn].channel;
 
@@ -46,6 +48,7 @@ const simtron = (botToken, options = {}, port) => {
   };
 
   const sendDisableSim = ({ event }) => {
+    const dictionary = getDictionary();
     const msisdn = getValueFromMessage(event, Object.keys(dictionary));
     const channel = dictionary[msisdn].channel;
 
@@ -109,16 +112,23 @@ const simtron = (botToken, options = {}, port) => {
     ) {
       web.users.info(event.user).then(response => {
         const username = response && response.user && response.user.name;
+        const dictionary = getDictionary();
         let ack = username ? `@${username} ` : ` `;
         if (messageContainsAnyText(event, Object.keys(dictionary))) {
-          if (messageContainsAnyText(event, "enable")) {
+          if (
+            messageContainsAnyText(event, "enable") &&
+            isFromAnyUser(event, opt.admins)
+          ) {
             sendEnableSim({ event });
             ack = ack + "Enable sim acknowledged!";
-          } else if (messageContainsAnyText(event, "disable")) {
+          } else if (
+            messageContainsAnyText(event, "disable") &&
+            isFromAnyUser(event, opt.admins)
+          ) {
             sendDisableSim({ event });
             ack = ack + "Disable sim acknowledged!";
           } else {
-            ack = ack + "You can ask either to enable PHONE or disable PHONE";
+            ack = ack + "Admin actions are restricted";
           }
         } else {
           ack = getDictionaryMessage({ dictionary });

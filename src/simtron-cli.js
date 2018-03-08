@@ -31,7 +31,8 @@ if (
 
 const options = {
   logger,
-  botIds: ["simtron", "@simtron", "<@U9EEFTDKL>"]
+  botIds: ["simtron", "@simtron", "<@U9EEFTDKL>"],
+  admins: ["U6XTUAV7X", "U41NYS5EZ"]
 };
 if (!process.env.BOT_TOKEN) {
   logger.error(

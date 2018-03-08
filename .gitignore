@@ -36,3 +36,5 @@ build/
 
 #token
 .boot.sh
+
+dictionary.storage

@@ -1,3 +1,6 @@
+import storage from "node-persist";
+import logger from "./logger";
+
 const dictionary = {
   5511942501644: {
     channel: 0,
@@ -31,4 +34,20 @@ const dictionary = {
   }
 };
 
-export default dictionary;
+storage.initSync({
+  dir: "dictionary.storage",
+  stringify: JSON.stringify,
+  parse: JSON.parse,
+  encoding: "utf8",
+  logging: false,
+  continuous: true,
+  interval: false,
+  ttl: false
+});
+storage.setItemSync("dictionary", dictionary);
+
+const getDictionary = () => {
+  return storage.getItemSync("dictionary");
+};
+
+export default getDictionary;

@@ -1,5 +1,5 @@
 import logger from "./logger";
-import dictionary from "./dictionary";
+import getDictionary from "./dictionary";
 
 const parse = (payload, bydefault = {}) => {
   let result = bydefault;
@@ -34,6 +34,7 @@ const getStatusMessage = message =>
 
 const getBodyMessage = message => {
   let text = "";
+  const dictionary = getDictionary();
   if (message.channel) {
     const msisdn = Object.keys(dictionary).find(
       key => dictionary[key].channel === message.channel
