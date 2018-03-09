@@ -36,9 +36,11 @@ const getBodyMessage = message => {
   let text = "";
   const dictionary = getDictionary();
   if (message.channel) {
-    const msisdn = Object.keys(dictionary).find(
-      key => dictionary[key].channel === message.channel
-    );
+    const { msisdn } =
+      dictionary.findSim({
+        channel: message.channel,
+        icc: message.icc
+      }) || {};
     if (msisdn) {
       text = msisdn + ": ";
     }

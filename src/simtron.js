@@ -39,8 +39,9 @@ const simtron = (botToken, options = {}, port) => {
 
   const sendEnableSim = ({ event }) => {
     const dictionary = getDictionary();
-    const msisdn = getValueFromMessage(event, Object.keys(dictionary));
-    const channel = dictionary[msisdn].channel;
+    const msisdn = getValueFromMessage(event, dictionary.getMsisdns());
+    console.log(msisdn);
+    const channel = dictionary.findSim({ msisdn }).channel;
 
     opt.logger.info(`Enabling sim channel: ${channel} for number: ${msisdn}`);
     enableSim({ port, channel });
@@ -49,8 +50,8 @@ const simtron = (botToken, options = {}, port) => {
 
   const sendDisableSim = ({ event }) => {
     const dictionary = getDictionary();
-    const msisdn = getValueFromMessage(event, Object.keys(dictionary));
-    const channel = dictionary[msisdn].channel;
+    const msisdn = getValueFromMessage(event, dictionary.getMsisdns());
+    const channel = dictionary.findSim({ msisdn }).channel;
 
     opt.logger.info(`Disabling sim channel: ${channel} for number: ${msisdn}`);
     disableSim({ port, channel });
@@ -69,12 +70,6 @@ const simtron = (botToken, options = {}, port) => {
       .list()
       .then(res => res.channels.filter(channel => channel.is_member));
 
-  port.on("data", payload => {
-    opt.logger.info(payload);
-    const decodedInput = payload.toString("utf8");
-    const line = readLine(decodedInput, writeMessage);
-  });
-
   const writeMessage = line => {
     opt.logger.info(line);
     const text = parseMessage(line);
@@ -86,22 +81,108 @@ const simtron = (botToken, options = {}, port) => {
     }
   };
 
+  const answerChannel = ({ opt, event, message }) => {
+    const msgOptions = {
+      as_user: true,
+      attachments: [
+        {
+          color: opt.messageColor,
+          title: message
+        }
+      ]
+    };
+
+    web.chat.postMessage(event.channel, "", msgOptions);
+    opt.logger.info(`Posting message to ${event.channel}`, msgOptions);
+  };
+
+  const messageUserName = (username, text) =>
+    (username ? `@${username} ` : ` `) + text;
+
+  const speeches = [
+    {
+      condition: ({ opt, event, dictionary }) =>
+        messageContainsAnyText(event, dictionary.getMsisdns()) &&
+        isFromAnyUser(event, opt.admins) &&
+        messageContainsAnyText(event, "enable"),
+
+      action: ({ event, username, dictionary }) => {
+        sendEnableSim({ event });
+        answerChannel({
+          opt,
+          event,
+          message: messageUserName(username, "Enable sim acknowledged!")
+        });
+      }
+    },
+    {
+      condition: ({ opt, event, dictionary }) =>
+        messageContainsAnyText(event, dictionary.getMsisdns()) &&
+        isFromAnyUser(event, opt.admins) &&
+        messageContainsAnyText(event, "disable"),
+      action: ({ event, username, dictionary }) => {
+        sendDisableSim({ event });
+        answerChannel({
+          opt,
+          event,
+          message: messageUserName(username, "Disable sim acknowledged!")
+        });
+      }
+    },
+    {
+      condition: ({ opt, event, dictionary }) =>
+        messageContainsAnyText(event, dictionary.getMsisdns()) &&
+        isFromAnyUser(event, opt.admins),
+      action: ({ event, username, dictionary }) => {
+        answerChannel({
+          opt,
+          event,
+          message: messageUserName(
+            username,
+            "Use 'enable PHONENUMBER' or 'disable PHONENUMBER' "
+          )
+        });
+      }
+    },
+    {
+      condition: ({ opt, event, dictionary }) =>
+        messageContainsAnyText(event, dictionary.getMsisdns()),
+      action: ({ event, username, dictionary }) => {
+        answerChannel({
+          opt,
+          event,
+          message: messageUserName(username, "Admin actions are restricted")
+        });
+      }
+    },
+    {
+      condition: ({ opt, event, dictionary }) => true,
+      action: ({ event, username, dictionary }) => {
+        answerChannel({
+          opt,
+          event,
+          message: messageUserName(
+            username,
+            getDictionaryMessage({ dictionary })
+          )
+        });
+      }
+    }
+  ];
+
   const getDictionaryMessage = ({ dictionary }) =>
-    `We have the following numbers: \r\n${Object.keys(dictionary)
-      .map(
-        key =>
-          key +
-          " " +
-          dictionary[key].provider +
-          " " +
-          dictionary[key].paymentModel
-      )
+    `We have the following numbers: \r\n${dictionary
+      .getData()
+      .map(item => item.msisdn + " " + item.provider + " " + item.paymentModel)
       .join(
         "\r\n"
       )} \r\n You can use these phone numbers to login into NOVUM, if you see no OTP SMS is received for a specific number, contact admins (warias or carlosfernandez) for help.`;
 
-  const getWhatCanIdoMessage = () =>
-    `Ask me for the phone numbers I handle to get a list of the sims I manage`;
+  port.on("data", payload => {
+    opt.logger.info(payload);
+    const decodedInput = payload.toString("utf8");
+    const line = readLine(decodedInput, writeMessage);
+  });
 
   rtm.on(RTM_EVENTS.MESSAGE, event => {
     if (
@@ -113,39 +194,19 @@ const simtron = (botToken, options = {}, port) => {
       web.users.info(event.user).then(response => {
         const username = response && response.user && response.user.name;
         const dictionary = getDictionary();
-        let ack = username ? `@${username} ` : ` `;
-        if (messageContainsAnyText(event, Object.keys(dictionary))) {
-          if (
-            messageContainsAnyText(event, "enable") &&
-            isFromAnyUser(event, opt.admins)
-          ) {
-            sendEnableSim({ event });
-            ack = ack + "Enable sim acknowledged!";
-          } else if (
-            messageContainsAnyText(event, "disable") &&
-            isFromAnyUser(event, opt.admins)
-          ) {
-            sendDisableSim({ event });
-            ack = ack + "Disable sim acknowledged!";
-          } else {
-            ack = ack + "Admin actions are restricted";
-          }
+
+        const speech = speeches.find(item =>
+          item.condition({ opt, event, dictionary })
+        );
+        if (speech && speech.action) {
+          speech.action({ event, username, dictionary });
         } else {
-          ack = getDictionaryMessage({ dictionary });
+          answerChannel({
+            opt,
+            event,
+            message: "Oops, there was an error!"
+          });
         }
-
-        const msgOptions = {
-          as_user: true,
-          attachments: [
-            {
-              color: opt.messageColor,
-              title: ack
-            }
-          ]
-        };
-
-        web.chat.postMessage(event.channel, "", msgOptions);
-        opt.logger.info(`Posting message to ${event.channel}`, msgOptions);
       });
     }
   });
