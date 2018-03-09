@@ -1,7 +1,6 @@
-const getStatus = ({ channel }) => `status ${channel}`;
-
-const enableMessage = ({ channel }) => `enable ${channel}`;
-const disableMessage = ({ channel }) => `disable ${channel}`;
+const getStatus = ({ channel }) => `status ${channel}\n`;
+const enableMessage = ({ channel }) => `enable ${channel}\n`;
+const disableMessage = ({ channel }) => `disable ${channel}\n`;
 
 export const enableSim = ({ port, channel }) =>
   port && port.write && port.write(enableMessage({ channel }));
