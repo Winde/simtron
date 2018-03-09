@@ -98,7 +98,7 @@ const simtron = (botToken, options = {}, port) => {
       )
       .join(
         "\r\n"
-      )} \r\n If you ask me for a specific phone number you can do:\r\n enable <PHONENUMBER> to start receiving SMS \r\n disable <PHONENUMBER> to stop receiving SMS`;
+      )} \r\n You can use these phone numbers to login into NOVUM, if you see no OTP SMS is received for a specific number, contact admins (warias or carlosfernandez) for help.`;
 
   const getWhatCanIdoMessage = () =>
     `Ask me for the phone numbers I handle to get a list of the sims I manage`;
