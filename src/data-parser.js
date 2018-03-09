@@ -30,7 +30,7 @@ export const readLine = (dataChunk, onLineReceived) => {
 };
 
 const getStatusMessage = message =>
-  `Channel ${message.channel} is ${message.status}`;
+  `Channel ${message.channel} status is: ${message.status}`;
 
 const getBodyMessage = message => {
   let text = "";
