@@ -4,17 +4,17 @@ import logger from "./logger";
 const dictionary = [
   {
     channel: 0,
-    icc: "89551025139002042458",
+    icc: "89551025139002042482",
     provider: "Vivo Legacy",
     paymentModel: "Control",
-    msisdn: "5511942501087"
+    msisdn: "5511942502249"
   },
   {
     channel: 1,
-    icc: "89551093144180753691",
+    icc: "89551093144180753659",
     provider: "Vivo Legacy",
-    paymentModel: "Postpay",
-    msisdn: "5521995382603"
+    paymentModel: "Prepay",
+    msisdn: "5521995148544"
   },
   {
     channel: 2,
@@ -25,39 +25,18 @@ const dictionary = [
   },
   {
     channel: 3,
-    icc: "8954075144249486461",
-    provider: "Movistar B2C",
-    paymentModel: "Control",
-    msisdn: "541122924345"
-  },
-  {
-    channel: 4,
-    icc: "89551093244021867187",
-    provider: "Vivo Beatrix",
-    paymentModel: "Control",
-    msisdn: "5511974468124"
-  },
-  {
-    channel: 5,
-    icc: "89551093144180753659",
+    icc: "89551093144180753691",
     provider: "Vivo Legacy",
-    paymentModel: "Prepay",
-    msisdn: "5521995148544"
+    paymentModel: "Postpay",
+    msisdn: "5521995382603"
   },
   {
-    channel: 6,
-    icc: "",
+    channel: 7,
+    icc: "8944110066707387600",
     provider: "O2",
     paymentModel: "postpay",
     msisdn: "447519194626"
   },
-  {
-    channel: 7,
-    icc: "89551025139002042482",
-    provider: "Vivo Legacy",
-    paymentModel: "Control",
-    msisdn: "5511942502249"
-  }
 ];
 
 storage.initSync({
