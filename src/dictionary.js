@@ -31,6 +31,20 @@ const dictionary = [
     msisdn: "5521995382603"
   },
   {
+    channel: 5,
+    icc: "8954079144210016210",
+    provider: "Movistar B2C",
+    paymentModel: "Full",
+    msisdn: "541144203936"
+  },
+  {
+    channel: 6,
+    icc: "8954079144256579014",
+    provider: "Movistar B2B",
+    paymentModel: "Control",
+    msisdn: "541165271099"
+  },
+  {
     channel: 7,
     icc: "8944110066707387600",
     provider: "O2",
