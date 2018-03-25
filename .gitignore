@@ -36,5 +36,9 @@ build/
 
 #token
 .boot.sh
+runbot.sh
+
+# library versions
+package-lock.json
 
 dictionary.storage

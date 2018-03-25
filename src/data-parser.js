@@ -29,34 +29,30 @@ export const readLine = (dataChunk, onLineReceived) => {
   return serialLineBuffer;
 };
 
-const getStatusMessage = message =>
-  `Channel ${message.channel} status is: ${message.status}`;
+const getMsisdnFromMessage = message => {
+  const dictionary = getDictionary();  
+  const { msisdn } =
+    dictionary.findSim({
+      channel: message.channel,
+      icc: message.icc
+    }) || {};
+  return msisdn;
+}
 
+const getStatusMessage = message => {
+  const msisdn = getMsisdnFromMessage(message);  
+  const text = `Channel ${message.channel} status is: ${message.status}`;
+  return msisdn ? msisdn + ": " + text : text
+}
+  
 const getBodyMessage = message => {
-  let text = "";
-  const dictionary = getDictionary();
-  if (message.channel) {
-    const { msisdn } =
-      dictionary.findSim({
-        channel: message.channel,
-        icc: message.icc
-      }) || {};
-    if (msisdn) {
-      text = msisdn + ": ";
-    }
-  }
-  return text + " " + message.body;
+  const msisdn = getMsisdnFromMessage(message);
+  return msisdn ? msisdn + ": " + message.body : message.body
 };
 
 export const parseMessage = payload => {
   const data = parse(payload);
-  let message = "";
-  if (data.type === "status") {
-    message = getStatusMessage(data);
-  } else if (data.type === "sms" || data.type === "booting") {
-    message = getBodyMessage(data);
-  }
-  return message;
+  return data.body ? getBodyMessage(data) : getStatusMessage(data)  
 };
 
 export default parse;
