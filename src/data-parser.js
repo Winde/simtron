@@ -43,14 +43,13 @@ const getSimDataFromMessage = message => {
   );
 };
 
-const serializeSimData = simData => {
+const serializeSimData = simData =>
   simData.msisdn
     ? simData.msisdn + " " + simData.provider + " " + simData.paymentModel
     : "";
-};
 
 const serializeMessageId = message =>
-  message.msisdn ||
+  (message.msisdn && message.msisdn != "?") ||
   (message.channel != undefined && "Channel " + message.channel) ||
   "";
 
@@ -92,10 +91,7 @@ const getMessage = parsedPayload =>
 
 export const parseMessage = rawPayload => {
   const data = parse(rawPayload);
-  console.log(data);
-  const message = getMessage(data);
-  console.log("MESSAGE: " + message);
-  return message;
+  return getMessage(data);
 };
 
 export default parse;
