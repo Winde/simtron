@@ -29,30 +29,73 @@ export const readLine = (dataChunk, onLineReceived) => {
   return serialLineBuffer;
 };
 
-const getMsisdnFromMessage = message => {
-  const dictionary = getDictionary();  
-  const { msisdn } =
+const getMsisdn = ({ message, simData }) =>
+  message.msisdn || simData.msisdn || "";
+
+const getSimDataFromMessage = message => {
+  const dictionary = getDictionary();
+  return (
     dictionary.findSim({
+      msisdn: message.msisdn,
       channel: message.channel,
       icc: message.icc
-    }) || {};
-  return msisdn;
-}
-
-const getStatusMessage = message => {
-  const msisdn = getMsisdnFromMessage(message);  
-  const text = `Channel ${message.channel} status is: ${message.status}`;
-  return msisdn ? msisdn + ": " + text : text
-}
-  
-const getBodyMessage = message => {
-  const msisdn = getMsisdnFromMessage(message);
-  return msisdn ? msisdn + ": " + message.body : message.body
+    }) || {}
+  );
 };
 
-export const parseMessage = payload => {
-  const data = parse(payload);
-  return data.body ? getBodyMessage(data) : getStatusMessage(data)  
+const serializeSimData = simData => {
+  simData.msisdn
+    ? simData.msisdn + " " + simData.provider + " " + simData.paymentModel
+    : "";
+};
+
+const serializeMessageId = message =>
+  message.msisdn ||
+  (message.channel != undefined && "Channel " + message.channel) ||
+  "";
+
+const identifySim = ({ message, simData }) =>
+  serializeSimData(simData)
+    ? serializeSimData(simData)
+    : serializeMessageId(message);
+
+const getStatusMessage = message => {
+  const simInfo = identifySim({
+    message,
+    simData: getSimDataFromMessage(message)
+  });
+  return `${simInfo} Status is: ${message.status}`;
+};
+
+const getBodyMessage = message => {
+  const simInfo = identifySim({
+    message,
+    simData: getSimDataFromMessage(message)
+  });
+  return `${simInfo} ${message.body}`;
+};
+
+const getSingleMessage = data => {
+  if (data) {
+    return data.body ? getBodyMessage(data) : getStatusMessage(data);
+  } else {
+    return "";
+  }
+};
+const getMessage = parsedPayload =>
+  Array.isArray(parsedPayload)
+    ? parsedPayload.reduce(
+        (total, currentValue) => total + "\n" + getSingleMessage(currentValue),
+        ""
+      )
+    : getSingleMessage(parsedPayload);
+
+export const parseMessage = rawPayload => {
+  const data = parse(rawPayload);
+  console.log(data);
+  const message = getMessage(data);
+  console.log("MESSAGE: " + message);
+  return message;
 };
 
 export default parse;
