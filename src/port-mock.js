@@ -17,7 +17,7 @@ const getPort = () => {
 };
 
 const messages = [
-  '{ "type": "sms", "body": "Bot under construction" }\n',
+  '{ "type": "sms", "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }\n',
   '{"type": "status", "channel": 7, "isEnabled": 1, "msisdn": "?", "icc": "89551093144180753659f", "status": "Message 1"}\n',
   '[{"type": "status", "channel": 7, "isEnabled": 1, "icc": "89551025139002042482f", "status": "Message 1"},{"type": "status", "channel": 7, "isEnabled": 1, "icc": "89551025139002042482f", "status": "Message 1"},{"type": "status", "channel": 7, "isEnabled": 1, "icc": "89551025139002042482f", "status": "Message 1"}]\n',
   '{"type": "sms", "channel": 7, "icc": "89551093144180753659f", "sender": "+34684193653", "datetime": "18/03/20,00:54:51+04", "body": "Message 2"}\n',

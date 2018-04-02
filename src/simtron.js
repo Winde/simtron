@@ -76,10 +76,10 @@ const simtron = (botToken, options = {}, port) => {
     return "";
   };
 
-  const postMessageToChannels = message => channels =>
+  const postMessageToChannels = (message, text) => channels =>
     channels.map(channel => {
       opt.logger.info(`Posting message to ${channel.name}`, message);
-      web.chat.postMessage(channel.id, "", message);
+      web.chat.postMessage(channel.id, text, message);
     });
 
   const getGroups = () => web.groups.list().then(res => res.groups);
@@ -93,8 +93,8 @@ const simtron = (botToken, options = {}, port) => {
     const text = parseMessage(line);
     if (text) {
       const msgOptions = { as_user: true };
-      const message = { ...msgOptions, attachments: [{ title: text }] };
-      getGroups().then(postMessageToChannels(message));
+      const message = { ...msgOptions };
+      getGroups().then(postMessageToChannels(message, text));
       getChannels().then(postMessageToChannels(message));
     }
   };
