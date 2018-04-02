@@ -95,7 +95,7 @@ const simtron = (botToken, options = {}, port) => {
       const msgOptions = { as_user: true };
       const message = { ...msgOptions };
       getGroups().then(postMessageToChannels(message, text));
-      getChannels().then(postMessageToChannels(message));
+      getChannels().then(postMessageToChannels(message, text));
     }
   };
 
