@@ -26,7 +26,6 @@ const dictionary = [
         paymentModel: 'Postpay',
         msisdn: '5521995382603',
     },
-
     {
         icc: '89551093244021869431',
         provider: 'Vivo Beatrix',
