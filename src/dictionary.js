@@ -26,6 +26,13 @@ const dictionary = [
         paymentModel: 'Postpay',
         msisdn: '5521995382603',
     },
+
+    {
+        icc: '89551093244021869431',
+        provider: 'Vivo Beatrix',
+        paymentModel: 'Postpay',
+        msisdn: '5511975807254',
+    },
     {
         icc: '8954079144210016210',
         provider: 'Movistar B2C',
