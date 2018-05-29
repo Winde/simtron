@@ -50,6 +50,12 @@ const dictionary = [
         paymentModel: 'postpay',
         msisdn: '447519194626',
     },
+    {
+        icc: '89551025139002042458',
+        provider: 'Vivo Legacy',
+        paymentModel: 'Postpay',
+        msisdn: '5511942501087',
+    },
 ];
 
 storage.initSync({
