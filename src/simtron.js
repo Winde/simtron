@@ -156,7 +156,7 @@ const simtron = (botToken, options = {}, port) => {
         answerChannel({
           opt,
           event,
-          message: messageUserName(username, "Getting status info ...")
+          message: messageUserName(username, "Getting status info...")
         });
       }
     },
@@ -193,7 +193,7 @@ const simtron = (botToken, options = {}, port) => {
         answerChannel({
           opt,
           event,
-          message: messageUserName(username, "Getting status info ...")
+          message: messageUserName(username, "Getting catalogue info...")
         });
       }
     }
