@@ -11,7 +11,7 @@ import {
 } from './utils';
 import parse, {parseMessage, readLine, MESSAGE_TYPE_PLAIN, MESSAGE_TYPE_RICH} from './data-parser';
 import getDictionary, {findIccChannel} from './dictionary';
-import {enableSim, disableSim, statusSim, catalogSims} from './actions';
+import {enableSim, disableSim, statusSim, catalogSims, reset} from './actions';
 
 const defaultOptions = {
     messageColor: '#590088',
@@ -147,7 +147,7 @@ const simtron = (botToken, options = {}, port) => {
         },
         {
             condition: ({opt, event, dictionary}) =>
-                messageContainsAnyText(event, dictionary.getMsisdns()) &&
+                messageContainsAnyText(event, 'reset') &&
                 isFromAnyUser(event, opt.admins) &&
                 messageContainsAnyText(event, 'reset'),
             action: ({event, username, dictionary}) => {
