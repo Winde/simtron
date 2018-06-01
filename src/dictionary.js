@@ -1,5 +1,4 @@
 import storage from 'node-persist';
-import logger from './logger';
 
 const dictionary = [
     // VIVO BR
@@ -67,7 +66,7 @@ const dictionary = [
         msisdn: '541151339576',
         flag: 'flag-ar',
     },
-        {
+    {
         icc: '8954079144256579014',
         provider: 'Movistar Ar B2B',
         paymentModel: 'Control',
@@ -84,6 +83,17 @@ const dictionary = [
     },
 ];
 
+let simChannels = {};
+
+export const storeIccChannel = ({icc, channel}) => {
+    simChannels[icc] = channel;
+};
+
+export const findIccChannel = icc => {
+    const iccKey = Object.keys(simChannels).find(storedIcc => icc.startsWith(storedIcc));
+    return simChannels[iccKey];
+};
+
 storage.initSync({
     dir: 'dictionary.storage',
     stringify: JSON.stringify,
@@ -97,12 +107,17 @@ storage.initSync({
 storage.setItemSync('dictionary', dictionary);
 
 const Dictionary = dictionary => ({
-    findSim: ({channel, icc, msisdn}) =>
+    findSim: message =>
         dictionary.find(
-            item => (icc && item.icc && icc.startsWith(item.icc)) || (msisdn && item.msisdn === msisdn)
+            item =>
+                (message.icc && item.icc && message.icc.startsWith(item.icc)) ||
+                (message.msisdn && item.msisdn === message.msisdn)
         ),
     getData: () => dictionary,
-    getMsisdns: () => dictionary.map(item => item.msisdn),
+    getMsisdns: () =>
+        dictionary.map(item => {
+            return item.msisdn;
+        }),
 });
 
 const getDictionary = () => {
