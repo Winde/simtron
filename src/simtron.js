@@ -59,6 +59,11 @@ const simtron = (botToken, options = {}, port) => {
         statusSim({port, channel});
     };
 
+    const sendReset = () => {
+        opt.logger.info('Resetting hardware');
+        reset({port});
+    };
+
     const postMessageToChannels = message => channels => {
         channels.map(channel => {
             opt.logger.info(`Posting message to ${channel.name}`, message);
@@ -137,6 +142,20 @@ const simtron = (botToken, options = {}, port) => {
                     opt,
                     event,
                     message: messageUserName(username, 'Getting status info...'),
+                });
+            },
+        },
+        {
+            condition: ({opt, event, dictionary}) =>
+                messageContainsAnyText(event, dictionary.getMsisdns()) &&
+                isFromAnyUser(event, opt.admins) &&
+                messageContainsAnyText(event, 'reset'),
+            action: ({event, username, dictionary}) => {
+                sendReset();
+                answerChannel({
+                    opt,
+                    event,
+                    message: messageUserName(username, 'Reset hardware acknowledged!'),
                 });
             },
         },
