@@ -90,7 +90,7 @@ export const storeIccChannel = ({icc, channel}) => {
 };
 
 export const findIccChannel = icc => {
-    const iccKey = Object.keys(simChannels).find(storedIcc => icc.startsWith(storedIcc));
+    const iccKey = Object.keys(simChannels).find(storedIcc => storedIcc.startsWith(icc));
     return simChannels[iccKey];
 };
 
