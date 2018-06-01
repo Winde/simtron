@@ -45,7 +45,7 @@ const getSimDataFromMessage = message => {
 
 const serializeSimData = simData =>
   simData.msisdn
-    ? simData.msisdn + " " + simData.provider + " " + simData.paymentModel
+    ? ":" + (simData.flag || "flag-aq") + ": *" + simData.msisdn + "* " + simData.provider + " " + simData.paymentModel
     : "";
 
 const serializeMessageId = message =>
