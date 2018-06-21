@@ -51,6 +51,13 @@ const dictionary = [
         msisdn: '5512996216580',
         flag: 'flag-br',
     },
+    {
+        icc: '89551022439003321080',
+        provider: 'Vivo Beatrix',
+        paymentModel: 'Control',
+        msisdn: '5512996519788',
+        flag: 'flag-br',
+    },
     // MOVISTAR AR
     {
         icc: '8954079144210016210',
