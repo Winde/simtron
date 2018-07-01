@@ -14,7 +14,6 @@ import getDictionary, {findIccChannel} from './dictionary';
 import {enableSim, disableSim, statusSim, catalogSims, reset} from './actions';
 
 const defaultOptions = {
-    messageColor: '#590088',
     usePictures: false,
     logger: console,
     rtmOptions: {},
@@ -70,7 +69,7 @@ const simtron = (botToken, options = {}, port) => {
             message.container === MESSAGE_TYPE_PLAIN &&
                 web.chat.postMessage(channel.id, message.text, {as_user: true});
             message.container === MESSAGE_TYPE_RICH &&
-                web.chat.postMessage(channel.id, '', {...message, as_user: true});
+                web.chat.postMessage(channel.id, message.text, {...message, as_user: true});
         });
     };
 
@@ -86,17 +85,8 @@ const simtron = (botToken, options = {}, port) => {
     };
 
     const answerChannel = ({opt, event, message}) => {
-        const msgOptions = {
-            as_user: true,
-            attachments: [
-                {
-                    color: opt.messageColor,
-                    title: message,
-                },
-            ],
-        };
-
-        web.chat.postMessage(event.channel, '', msgOptions);
+        const msgOptions = {as_user: true};
+        web.chat.postMessage(event.channel, message, msgOptions);
         opt.logger.info(`Posting message to ${event.channel}`, msgOptions);
     };
 

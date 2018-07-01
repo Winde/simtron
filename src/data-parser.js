@@ -99,16 +99,18 @@ const getMessage = inputMessage => {
         let simInfo = undefined;
         switch (inputMessage.type) {
             case 'sms':
+                const simData = getSimDataFromMessage(inputMessage);
                 simInfo = identifySim({
                     message: inputMessage,
-                    simData: getSimDataFromMessage(inputMessage),
+                    simData: simData,
                 });
                 return {
                     container: MESSAGE_TYPE_RICH,
                     attachments: [
                         {
+                            title: ':incoming_envelope: SMS from ' + simData.msisdn,
+                            color: '#114499',
                             text: inputMessage.body,
-                            title: simInfo,
                         },
                     ],
                 };
