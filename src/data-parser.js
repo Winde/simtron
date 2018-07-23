@@ -59,12 +59,13 @@ const serializeSimData = simData =>
     simData.msisdn
         ? ':' +
           (simData.flag || 'flag-aq') +
-          ': ' +
+          ': *' +
           simData.msisdn +
           ' ' +
           simData.provider +
           ' ' +
-          simData.paymentModel
+          simData.paymentModel +
+          '*'
         : '';
 
 const serializeMessageId = message =>
@@ -75,14 +76,12 @@ const serializeMessageId = message =>
 const identifySim = ({message, simData}) =>
     serializeSimData(simData) ? serializeSimData(simData) : serializeMessageId(message);
 
-const getStatusColor = statusCode => {
+const getStatusEmoji = statusCode => {
     switch (statusCode) {
-        case SEARCHING:
-            return '#F1E7E6';
         case NOT_REGISTERED:
         case REGISTRATION_DENIED:
         case UNKNOWN:
-            return '#FF0033';
+            return ':red_circle:';
         case REGISTERED_HOME:
         case REGISTERED_ROAMING:
         case REGISTERED_HOME_SMS_ONLY:
@@ -90,7 +89,10 @@ const getStatusColor = statusCode => {
         case REGISTERED_FOR_EMERGENCY_ONLY:
         case REGISTERED_HOME_FOR_CSFB:
         case REGISTERED_ROAMING_FOR_CSFB:
-            return '#228B22';
+            return ':large_blue_circle:';
+        case SEARCHING:
+        default:
+            return ':white_circle:';
     }
 };
 
@@ -106,28 +108,18 @@ const getMessage = inputMessage => {
                 });
                 return {
                     container: MESSAGE_TYPE_RICH,
-                    attachments: [
-                        {
-                            title: ':incoming_envelope: SMS from ' + simData.msisdn,
-                            color: '#114499',
-                            text: inputMessage.body,
-                        },
-                    ],
+                    text: simInfo,
+                    attachments: [{text: inputMessage.body, color: '#3682ff'}]
                 };
             case 'status':
                 simInfo = identifySim({
                     message: inputMessage,
                     simData: getSimDataFromMessage(inputMessage),
                 });
+                const message = getStatusEmoji(inputMessage.networkStatus) + ' ' + simInfo + '. ' + inputMessage.status + '.'
                 return {
-                    container: MESSAGE_TYPE_RICH,
-                    attachments: [
-                        {
-                            color: getStatusColor(inputMessage.networkStatus),
-                            text: inputMessage.status,
-                            title: simInfo,
-                        },
-                    ],
+                    container: MESSAGE_TYPE_PLAIN,
+                    text: message,
                 };
             case 'booting':
                 return {
