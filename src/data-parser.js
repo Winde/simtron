@@ -55,17 +55,18 @@ const getSimDataFromMessage = message => {
     );
 };
 
-const serializeSimData = simData =>
+const serializeSimData = ({simData, hlChar}) =>
     simData.msisdn
         ? ':' +
           (simData.flag || 'flag-aq') +
-          ': *' +
+          ': ' +
+          hlChar +
           simData.msisdn +
           ' ' +
           simData.provider +
           ' ' +
           simData.paymentModel +
-          '*'
+          hlChar
         : '';
 
 const serializeMessageId = message =>
@@ -73,15 +74,11 @@ const serializeMessageId = message =>
     (message.channel != undefined && 'Channel ' + message.channel) ||
     '';
 
-const identifySim = ({message, simData}) =>
-    serializeSimData(simData) ? serializeSimData(simData) : serializeMessageId(message);
+const identifySim = ({message, simData, hlChar}) =>
+    serializeSimData({simData, hlChar}) ? serializeSimData({simData, hlChar}) : serializeMessageId(message);
 
-const getStatusEmoji = statusCode => {
+const isStatusOk = statusCode => {
     switch (statusCode) {
-        case NOT_REGISTERED:
-        case REGISTRATION_DENIED:
-        case UNKNOWN:
-            return ':red_circle:';
         case REGISTERED_HOME:
         case REGISTERED_ROAMING:
         case REGISTERED_HOME_SMS_ONLY:
@@ -89,10 +86,13 @@ const getStatusEmoji = statusCode => {
         case REGISTERED_FOR_EMERGENCY_ONLY:
         case REGISTERED_HOME_FOR_CSFB:
         case REGISTERED_ROAMING_FOR_CSFB:
-            return ':large_blue_circle:';
+            return true;
         case SEARCHING:
+        case NOT_REGISTERED:
+        case REGISTRATION_DENIED:
+        case UNKNOWN:
         default:
-            return ':white_circle:';
+            return false;
     }
 };
 
@@ -105,6 +105,7 @@ const getMessage = inputMessage => {
                 simInfo = identifySim({
                     message: inputMessage,
                     simData: simData,
+                    hlChar: '*',
                 });
                 return {
                     container: MESSAGE_TYPE_RICH,
@@ -115,8 +116,9 @@ const getMessage = inputMessage => {
                 simInfo = identifySim({
                     message: inputMessage,
                     simData: getSimDataFromMessage(inputMessage),
+                    hlChar: isStatusOk() ? '*' : '~',
                 });
-                const message = getStatusEmoji(inputMessage.networkStatus) + ' ' + simInfo + '. ' + inputMessage.status + '.'
+                const message = simInfo + '. ' + inputMessage.status + '.'
                 return {
                     container: MESSAGE_TYPE_PLAIN,
                     text: message,
