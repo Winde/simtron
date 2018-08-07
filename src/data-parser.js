@@ -55,18 +55,18 @@ const getSimDataFromMessage = message => {
     );
 };
 
-const serializeSimData = ({simData, hlChar}) =>
+const serializeSimData = ({simData, highlighChar}) =>
     simData.msisdn
         ? ':' +
           (simData.flag || 'flag-aq') +
           ': ' +
-          hlChar +
+          highlighChar +
           simData.msisdn +
           ' ' +
           simData.provider +
           ' ' +
           simData.paymentModel +
-          hlChar
+          highlighChar
         : '';
 
 const serializeMessageId = message =>
@@ -74,8 +74,8 @@ const serializeMessageId = message =>
     (message.channel != undefined && 'Channel ' + message.channel) ||
     '';
 
-const identifySim = ({message, simData, hlChar}) =>
-    serializeSimData({simData, hlChar}) ? serializeSimData({simData, hlChar}) : serializeMessageId(message);
+const identifySim = ({message, simData, highlighChar}) =>
+    serializeSimData({simData, highlighChar}) ? serializeSimData({simData, highlighChar}) : serializeMessageId(message);
 
 const isStatusOk = statusCode => {
     switch (statusCode) {
@@ -105,7 +105,7 @@ const getMessage = inputMessage => {
                 simInfo = identifySim({
                     message: inputMessage,
                     simData: simData,
-                    hlChar: '*',
+                    highlighChar: '*',
                 });
                 return {
                     container: MESSAGE_TYPE_RICH,
@@ -116,7 +116,7 @@ const getMessage = inputMessage => {
                 simInfo = identifySim({
                     message: inputMessage,
                     simData: getSimDataFromMessage(inputMessage),
-                    hlChar: isStatusOk() ? '*' : '~',
+                    highlighChar: isStatusOk() ? '*' : '~',
                 });
                 const message = simInfo + '. ' + inputMessage.status + '.'
                 return {
