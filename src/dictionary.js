@@ -58,6 +58,13 @@ const dictionary = [
         msisdn: '5512996519788',
         flag: 'flag-br',
     },
+    {
+        icc: '89551025339001566131',
+        provider: 'Vivo Legacy',
+        paymentModel: 'Prepay',
+        msisdn: '5511995658894',
+        flag: 'flag-br',
+    },
     // MOVISTAR AR
     {
         icc: '8954079144210016210',
